@@ -95,12 +95,12 @@ public:
 	dst += sizeof(child_count_dense_);
 	memcpy(dst, level_cuts_, sizeof(position_t) * height_);
 	dst += (sizeof(position_t) * height_);
-	align(dst);
+	//align(dst);
 	labels_->serialize(dst);
 	child_indicator_bits_->serialize(dst);
 	louds_bits_->serialize(dst);
 	suffixes_->serialize(dst);
-	align(dst);
+	//align(dst);
     }
 
     static LoudsSparse* deSerialize(char*& src) {
@@ -117,21 +117,29 @@ public:
 	memcpy(louds_sparse->level_cuts_, src,
 	       sizeof(position_t) * (louds_sparse->height_));
 	src += (sizeof(position_t) * (louds_sparse->height_));
-	align(src);
-	louds_sparse->labels_ = LabelVector::deSerialize(src);
-	louds_sparse->child_indicator_bits_ = BitvectorRank::deSerialize(src);
-	louds_sparse->louds_bits_ = BitvectorSelect::deSerialize(src);
-	louds_sparse->suffixes_ = BitvectorSuffix::deSerialize(src);
-	align(src);
+	//align(src);
+	louds_sparse->labels_ = new LabelVector();
+	louds_sparse->labels_->deSerialize(src);
+	louds_sparse->child_indicator_bits_ = new BitvectorRank();
+	louds_sparse->child_indicator_bits_->deSerialize(src);
+	louds_sparse->louds_bits_ = new BitvectorSelect();
+	louds_sparse->louds_bits_->deSerialize(src);
+	louds_sparse->suffixes_ = new BitvectorSuffix();
+	louds_sparse->suffixes_->deSerialize(src);
+	//align(src);
 	return louds_sparse;
     }
 
     void destroy() {
 	delete[] level_cuts_;
 	labels_->destroy();
+        delete labels_;
 	child_indicator_bits_->destroy();
+	delete child_indicator_bits_;
 	louds_bits_->destroy();
+	delete louds_bits_;
 	suffixes_->destroy();
+	delete suffixes_;
     }
 
 private:

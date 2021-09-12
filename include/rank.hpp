@@ -68,21 +68,23 @@ public:
 	dst += bitsSize();
 	memcpy(dst, rank_lut_, rankLutSize());
 	dst += rankLutSize();
-	align(dst);
+	//align(dst);
     }
 
-    static BitvectorRank* deSerialize(char*& src) {
-	BitvectorRank* bv_rank = new BitvectorRank();
-	memcpy(&(bv_rank->num_bits_), src, sizeof(bv_rank->num_bits_));
-	src += sizeof(bv_rank->num_bits_);
-	memcpy(&(bv_rank->basic_block_size_), src, sizeof(bv_rank->basic_block_size_));
-	src += sizeof(bv_rank->basic_block_size_);
-	bv_rank->bits_ = const_cast<word_t*>(reinterpret_cast<const word_t*>(src));
-	src += bv_rank->bitsSize();
-	bv_rank->rank_lut_ = const_cast<position_t*>(reinterpret_cast<const position_t*>(src));
-	src += bv_rank->rankLutSize();
-	align(src);
-	return bv_rank;
+    int deSerialize(char*& src) {
+	memcpy(&num_bits_, src, sizeof(num_bits_));
+	src += sizeof(num_bits_);
+	memcpy(&basic_block_size_, src, sizeof(basic_block_size_));
+	src += sizeof(basic_block_size_);
+	bits_ = new word_t[numWords()];
+        memcpy(bits_, src, bitsSize());
+	src += bitsSize();
+	position_t num_blocks = num_bits_ / basic_block_size_ + 1;
+	rank_lut_ = new position_t[num_blocks];
+	memcpy(rank_lut_, src, rankLutSize());
+	src += rankLutSize();
+	//align(src);
+	return 0;
     }
 
     void destroy() {

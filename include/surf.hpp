@@ -71,7 +71,7 @@ public:
 	create(keys, include_dense, sparse_dense_ratio, suffix_type, hash_suffix_len, real_suffix_len);
     }
 
-    ~SuRF() {}
+    ~SuRF() { destroy(); }
 
     void create(const std::vector<std::string>& keys,
 		const bool include_dense, const uint32_t sparse_dense_ratio,
@@ -110,33 +110,36 @@ public:
 	SuRF* surf = new SuRF();
 	surf->louds_dense_ = LoudsDense::deSerialize(src);
 	surf->louds_sparse_ = LoudsSparse::deSerialize(src);
-	surf->iter_ = SuRF::Iter(surf);
+	//surf->iter_ = SuRF::Iter(surf);
 	return surf;
     }
 
+   private:
     void destroy() {
 	louds_dense_->destroy();
+	delete louds_dense_;
 	louds_sparse_->destroy();
+	delete louds_sparse_;
     }
 
 private:
     LoudsDense* louds_dense_;
     LoudsSparse* louds_sparse_;
-    SuRFBuilder* builder_;
-    SuRF::Iter iter_;
-    SuRF::Iter iter2_;
+    //SuRFBuilder* builder_;
+    //SuRF::Iter iter_;
+    //SuRF::Iter iter2_;
 };
 
 void SuRF::create(const std::vector<std::string>& keys, 
 		  const bool include_dense, const uint32_t sparse_dense_ratio,
 		  const SuffixType suffix_type,
                   const level_t hash_suffix_len, const level_t real_suffix_len) {
-    builder_ = new SuRFBuilder(include_dense, sparse_dense_ratio,
+    SuRFBuilder* builder_ = new SuRFBuilder(include_dense, sparse_dense_ratio,
                               suffix_type, hash_suffix_len, real_suffix_len);
     builder_->build(keys);
     louds_dense_ = new LoudsDense(builder_);
     louds_sparse_ = new LoudsSparse(builder_);
-    iter_ = SuRF::Iter(this);
+    //iter_ = SuRF::Iter(this);
     delete builder_;
 }
 
@@ -222,7 +225,8 @@ SuRF::Iter SuRF::moveToLast() const {
 
 bool SuRF::lookupRange(const std::string& left_key, const bool left_inclusive, 
 		       const std::string& right_key, const bool right_inclusive) {
-    iter_.clear();
+    //iter_.clear();
+    auto iter_ = SuRF::Iter(this);
     louds_dense_->moveToKeyGreaterThan(left_key, left_inclusive, iter_.dense_iter_);
     if (!iter_.dense_iter_.isValid()) return false;
     if (!iter_.dense_iter_.isComplete()) {
@@ -263,10 +267,11 @@ uint64_t SuRF::approxCount(const SuRF::Iter* iter, const SuRF::Iter* iter2) {
 
 uint64_t SuRF::approxCount(const std::string& left_key,
 			   const std::string& right_key) {
-    iter_.clear(); iter2_.clear();
+    //iter_.clear(); iter2_.clear();
+    auto iter_ = SuRF::Iter(this);
     iter_ = moveToKeyGreaterThan(left_key, true);
     if (!iter_.isValid()) return 0;
-    iter2_ = moveToKeyGreaterThan(right_key, true);
+    auto iter2_ = moveToKeyGreaterThan(right_key, true);
     if (!iter2_.isValid())
 	iter2_ = moveToLast();
 

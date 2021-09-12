@@ -95,23 +95,26 @@ public:
 	dst += bitsSize();
 	memcpy(dst, select_lut_, selectLutSize());
 	dst += selectLutSize();
-	align(dst);
+	//align(dst);
     }
 
-    static BitvectorSelect* deSerialize(char*& src) {
-	BitvectorSelect* bv_select = new BitvectorSelect();
-	memcpy(&(bv_select->num_bits_), src, sizeof(bv_select->num_bits_));
-	src += sizeof(bv_select->num_bits_);
-	memcpy(&(bv_select->sample_interval_), src, sizeof(bv_select->sample_interval_));
-	src += sizeof(bv_select->sample_interval_);
-	memcpy(&(bv_select->num_ones_), src, sizeof(bv_select->num_ones_));
-	src += sizeof(bv_select->num_ones_);
-	bv_select->bits_ = const_cast<word_t*>(reinterpret_cast<const word_t*>(src));
-	src += bv_select->bitsSize();
-	bv_select->select_lut_ = const_cast<position_t*>(reinterpret_cast<const position_t*>(src));
-	src += bv_select->selectLutSize();
-	align(src);
-	return bv_select;
+    int deSerialize(char*& src) {
+	memcpy(&num_bits_, src, sizeof(num_bits_));
+	src += sizeof(num_bits_);
+	memcpy(&sample_interval_, src, sizeof(sample_interval_));
+	src += sizeof(sample_interval_);
+	memcpy(&num_ones_, src, sizeof(num_ones_));
+	src += sizeof(num_ones_);
+	bits_ = new word_t[numWords()];
+        memcpy(bits_, src, bitsSize());
+	src += bitsSize();
+	auto select_lut_sz = selectLutSize();
+	auto num_samples = select_lut_sz/sizeof(position_t);
+	select_lut_ = new position_t[num_samples];
+	memcpy(select_lut_, src, select_lut_sz);
+	src += select_lut_sz;
+	//align(src);
+	return 0;
     }
 
     void destroy() {
@@ -148,6 +151,7 @@ private:
 	for (position_t i = 0; i < num_samples; i++)
 	    select_lut_[i] = select_lut_vector[i];
     }
+
 
 private:
     position_t sample_interval_;

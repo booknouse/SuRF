@@ -105,12 +105,12 @@ public:
 	dst += sizeof(height_);
 	memcpy(dst, level_cuts_, sizeof(position_t) * height_);
 	dst += (sizeof(position_t) * height_);
-	align(dst);
+	//align(dst);
 	label_bitmaps_->serialize(dst);
 	child_indicator_bitmaps_->serialize(dst);
 	prefixkey_indicator_bits_->serialize(dst);
 	suffixes_->serialize(dst);
-	align(dst);
+	//align(dst);
     }
 
     static LoudsDense* deSerialize(char*& src) {
@@ -121,20 +121,28 @@ public:
 	memcpy(louds_dense->level_cuts_, src,
 	       sizeof(position_t) * (louds_dense->height_));
 	src += (sizeof(position_t) * (louds_dense->height_));
-	align(src);
-	louds_dense->label_bitmaps_ = BitvectorRank::deSerialize(src);
-	louds_dense->child_indicator_bitmaps_ = BitvectorRank::deSerialize(src);
-	louds_dense->prefixkey_indicator_bits_ = BitvectorRank::deSerialize(src);
-	louds_dense->suffixes_ = BitvectorSuffix::deSerialize(src);
-	align(src);
+	//align(src);
+	louds_dense->label_bitmaps_ = new BitvectorRank();
+	louds_dense->label_bitmaps_->deSerialize(src);
+	louds_dense->child_indicator_bitmaps_ = new BitvectorRank();
+	louds_dense->child_indicator_bitmaps_->deSerialize(src);
+	louds_dense->prefixkey_indicator_bits_ = new BitvectorRank();
+	louds_dense->prefixkey_indicator_bits_->deSerialize(src);
+	louds_dense->suffixes_ = new BitvectorSuffix();
+	louds_dense->suffixes_->deSerialize(src);
+	//align(src);
 	return louds_dense;
     }
 
     void destroy() {
 	label_bitmaps_->destroy();
+	delete label_bitmaps_;
 	child_indicator_bitmaps_->destroy();
+	delete child_indicator_bitmaps_;
 	prefixkey_indicator_bits_->destroy();
+	delete prefixkey_indicator_bits_;
 	suffixes_->destroy();
+	delete suffixes_;
     }
 
 private:

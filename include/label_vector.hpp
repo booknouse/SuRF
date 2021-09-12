@@ -69,21 +69,21 @@ public:
     bool linearSearchGreaterThan(const label_t target, position_t& pos, const position_t search_len) const;
 
     void serialize(char*& dst) const {
-	memcpy(dst, &num_bytes_, sizeof(num_bytes_));
-	dst += sizeof(num_bytes_);
-	memcpy(dst, labels_, num_bytes_);
-	dst += num_bytes_;
-	align(dst);
+        memcpy(dst, &num_bytes_, sizeof(num_bytes_));
+        dst += sizeof(num_bytes_);
+        memcpy(dst, labels_, num_bytes_);
+        dst += num_bytes_;
+        // align(dst);
     }
-    
-    static LabelVector* deSerialize(char*& src) {
-	LabelVector* lv = new LabelVector();
-	memcpy(&(lv->num_bytes_), src, sizeof(lv->num_bytes_));
-	src += sizeof(lv->num_bytes_);
-	lv->labels_ = const_cast<label_t*>(reinterpret_cast<const label_t*>(src));
-	src += lv->num_bytes_;
-	align(src);
-	return lv;
+
+    int deSerialize(char*& src) {
+        memcpy(&num_bytes_, src, sizeof(num_bytes_));
+        src += sizeof(num_bytes_);
+        labels_ = new label_t[num_bytes_];
+        memcpy(labels_, src, num_bytes_);
+        src += num_bytes_;
+        // align(src);
+        return 0;
     }
 
     void destroy() {

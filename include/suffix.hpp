@@ -148,25 +148,25 @@ public:
 	    memcpy(dst, bits_, bitsSize());
 	    dst += bitsSize();
 	}
-	align(dst);
+	//align(dst);
     }
 
-    static BitvectorSuffix* deSerialize(char*& src) {
-	BitvectorSuffix* sv = new BitvectorSuffix();
-	memcpy(&(sv->num_bits_), src, sizeof(sv->num_bits_));
-	src += sizeof(sv->num_bits_);
-	memcpy(&(sv->type_), src, sizeof(sv->type_));
-	src += sizeof(sv->type_);
-	memcpy(&(sv->hash_suffix_len_), src, sizeof(sv->hash_suffix_len_));
-	src += sizeof(sv->hash_suffix_len_);
-        memcpy(&(sv->real_suffix_len_), src, sizeof(sv->real_suffix_len_));
-	src += sizeof(sv->real_suffix_len_);
-	if (sv->type_ != kNone) {
-	    sv->bits_ = const_cast<word_t*>(reinterpret_cast<const word_t*>(src));
-	    src += sv->bitsSize();
+    int deSerialize(char*& src) {
+	memcpy(&num_bits_, src, sizeof(num_bits_));
+	src += sizeof(num_bits_);
+	memcpy(&type_, src, sizeof(type_));
+	src += sizeof(type_);
+	memcpy(&hash_suffix_len_, src, sizeof(hash_suffix_len_));
+	src += sizeof(hash_suffix_len_);
+        memcpy(&real_suffix_len_, src, sizeof(real_suffix_len_));
+	src += sizeof(real_suffix_len_);
+	if (type_ != kNone) {
+	    bits_ =  new word_t[numWords()];
+	    memcpy(bits_, src, bitsSize());
+	    src += bitsSize();
 	}
-	align(src);
-	return sv;
+	//align(src);
+	return 0;
     }
 
     void destroy() {
