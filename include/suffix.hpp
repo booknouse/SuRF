@@ -119,7 +119,7 @@ public:
     position_t serializedSize() const {
 	position_t size = sizeof(num_bits_) + sizeof(type_)
             + sizeof(hash_suffix_len_) + sizeof(real_suffix_len_) + bitsSize();
-	sizeAlign(size);
+	//sizeAlign(size);
 	return size;
     }
 

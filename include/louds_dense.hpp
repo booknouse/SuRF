@@ -373,12 +373,12 @@ uint64_t LoudsDense::approxCount(const LoudsDense::Iter* iter_left,
 uint64_t LoudsDense::serializedSize() const {
     uint64_t size = sizeof(height_)
 	+ (sizeof(position_t) * height_);
-    sizeAlign(size);
+    //sizeAlign(size);
     size += (label_bitmaps_->serializedSize()
 	     + child_indicator_bitmaps_->serializedSize()
 	     + prefixkey_indicator_bits_->serializedSize()
 	     + suffixes_->serializedSize());
-    sizeAlign(size);
+    //sizeAlign(size);
     return size;
 }
 

@@ -42,7 +42,7 @@ public:
 
     position_t serializedSize() const {
 	position_t size = sizeof(num_bytes_) + num_bytes_;
-	sizeAlign(size);
+	//sizeAlign(size);
 	return size;
     }
 

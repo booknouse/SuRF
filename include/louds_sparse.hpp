@@ -409,12 +409,12 @@ uint64_t LoudsSparse::serializedSize() const {
     uint64_t size = sizeof(height_) + sizeof(start_level_)
 	+ sizeof(node_count_dense_) + sizeof(child_count_dense_)
 	+ (sizeof(position_t) * height_);
-    sizeAlign(size);
+    //sizeAlign(size);
     size += (labels_->serializedSize()
 	     + child_indicator_bits_->serializedSize()
 	     + louds_bits_->serializedSize()
 	     + suffixes_->serializedSize());
-    sizeAlign(size);
+    //sizeAlign(size);
     return size;
 }
 

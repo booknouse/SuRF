@@ -46,7 +46,7 @@ public:
     position_t serializedSize() const {
 	position_t size = sizeof(num_bits_) + sizeof(basic_block_size_) 
 	    + bitsSize() + rankLutSize();
-	sizeAlign(size);
+	//sizeAlign(size);
 	return size;
     }
 

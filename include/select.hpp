@@ -72,7 +72,7 @@ public:
     position_t serializedSize() const {
 	position_t size = sizeof(num_bits_) + sizeof(sample_interval_) + sizeof(num_ones_)
 	    + bitsSize() + selectLutSize();
-	sizeAlign(size);
+	//sizeAlign(size);
 	return size;
     }
 

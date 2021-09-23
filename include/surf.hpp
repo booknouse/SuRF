@@ -96,14 +96,14 @@ public:
     level_t getHeight() const;
     level_t getSparseStartLevel() const;
 
-    char* serialize() const {
+    char* serialize(char* buf) const {
 	uint64_t size = serializedSize();
-	char* data = new char[size];
-	char* cur_data = data;
+	//char* data = new char[size];
+	char* cur_data = buf;
 	louds_dense_->serialize(cur_data);
 	louds_sparse_->serialize(cur_data);
-	assert(cur_data - data == (int64_t)size);
-	return data;
+	assert(cur_data - buf == (int64_t)size);
+	return cur_data;
     }
 
     static SuRF* deSerialize(char* src) {
