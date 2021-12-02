@@ -12,6 +12,11 @@ namespace surf {
 class Bitvector {
 public:
     Bitvector() : num_bits_(0), bits_(nullptr) {};
+    Bitvector(const Bitvector& other) : num_bits_(other.num_bits_){
+        auto numwords = other.numWords();
+        bits_ = new word_t[numwords];
+        memmove(bits_, other.bits_, numwords*sizeof(word_t));
+    }
 
     Bitvector(const std::vector<std::vector<word_t> >& bitvector_per_level, 
 	      const std::vector<position_t>& num_bits_per_level, 

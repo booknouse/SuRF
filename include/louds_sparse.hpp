@@ -65,6 +65,18 @@ public:
 public:
     LoudsSparse() {};
     inline LoudsSparse(const SuRFBuilder* builder);
+    LoudsSparse(const LoudsSparse& other)
+        : height_(other.height_),
+          start_level_(other.start_level_),
+          node_count_dense_(other.node_count_dense_),
+          child_count_dense_(other.child_count_dense_),
+          labels_(new LabelVector(*other.labels_)),
+          child_indicator_bits_(new BitvectorRank(*other.child_indicator_bits_)),
+          louds_bits_(new BitvectorSelect(*other.louds_bits_)),
+          suffixes_(new BitvectorSuffix(*other.suffixes_)){
+        level_cuts_ = new position_t[height_];
+        memmove(level_cuts_, other.level_cuts_, height_*sizeof(position_t));
+    }
 
     ~LoudsSparse() {}
 
@@ -103,7 +115,7 @@ public:
 	//align(dst);
     }
 
-    static LoudsSparse* deSerialize(char*& src) {
+    static LoudsSparse* deSerialize(const char*& src) {
 	LoudsSparse* louds_sparse = new LoudsSparse();
 	memcpy(&(louds_sparse->height_), src, sizeof(louds_sparse->height_));
 	src += sizeof(louds_sparse->height_);

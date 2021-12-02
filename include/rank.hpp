@@ -14,7 +14,11 @@ namespace surf {
 class BitvectorRank : public Bitvector {
 public:
     BitvectorRank() : basic_block_size_(0), rank_lut_(nullptr) {};
-
+    BitvectorRank(const BitvectorRank& other): Bitvector(other), basic_block_size_(other.basic_block_size_){
+        position_t num_blocks = num_bits_ / basic_block_size_ + 1;
+        rank_lut_ = new position_t[num_blocks];
+        memmove(rank_lut_, other.rank_lut_, num_blocks*sizeof(position_t));
+    }
     BitvectorRank(const position_t basic_block_size, 
 		  const std::vector<std::vector<word_t> >& bitvector_per_level, 
 		  const std::vector<position_t>& num_bits_per_level,
@@ -71,7 +75,7 @@ public:
 	//align(dst);
     }
 
-    int deSerialize(char*& src) {
+    int deSerialize(const char*& src) {
 	memcpy(&num_bits_, src, sizeof(num_bits_));
 	src += sizeof(num_bits_);
 	memcpy(&basic_block_size_, src, sizeof(basic_block_size_));

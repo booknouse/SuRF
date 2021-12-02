@@ -19,7 +19,7 @@ namespace surf {
 class BitvectorSuffix : public Bitvector {
 public:
     BitvectorSuffix() : type_(kNone), hash_suffix_len_(0), real_suffix_len_(0) {};
-
+    BitvectorSuffix(const BitvectorSuffix& other):Bitvector(other), type_(other.type_), hash_suffix_len_(other.hash_suffix_len_), real_suffix_len_(other.real_suffix_len_){}
     BitvectorSuffix(const SuffixType type,
                     const level_t hash_suffix_len, const level_t real_suffix_len,
                     const std::vector<std::vector<word_t> >& bitvector_per_level,
@@ -151,7 +151,7 @@ public:
 	//align(dst);
     }
 
-    int deSerialize(char*& src) {
+    int deSerialize(const char*& src) {
 	memcpy(&num_bits_, src, sizeof(num_bits_));
 	src += sizeof(num_bits_);
 	memcpy(&type_, src, sizeof(type_));

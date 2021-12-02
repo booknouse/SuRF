@@ -82,7 +82,15 @@ public:
 public:
     LoudsDense() {};
     inline LoudsDense(const SuRFBuilder* builder);
-
+    LoudsDense(const LoudsDense& other)
+        : height_(other.height_),
+          label_bitmaps_(new BitvectorRank(*other.label_bitmaps_)),
+          child_indicator_bitmaps_(new BitvectorRank(*other.child_indicator_bitmaps_)),
+          prefixkey_indicator_bits_(new BitvectorRank(*other.prefixkey_indicator_bits_)),
+          suffixes_(new BitvectorSuffix(*other.suffixes_)) {
+        level_cuts_ = new position_t[height_];
+        memmove(level_cuts_, other.level_cuts_, height_ * sizeof(position_t));
+    }
     ~LoudsDense() {}
 
     // Returns whether key exists in the trie so far
@@ -113,7 +121,7 @@ public:
 	//align(dst);
     }
 
-    static LoudsDense* deSerialize(char*& src) {
+    static LoudsDense* deSerialize(const char*& src) {
 	LoudsDense* louds_dense = new LoudsDense();
 	memcpy(&(louds_dense->height_), src, sizeof(louds_dense->height_));
 	src += sizeof(louds_dense->height_);

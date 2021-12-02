@@ -15,7 +15,12 @@ namespace surf {
 class BitvectorSelect : public Bitvector {
 public:
     BitvectorSelect() : sample_interval_(0), num_ones_(0), select_lut_(nullptr) {};
-
+    BitvectorSelect(const BitvectorSelect& other):Bitvector(other), sample_interval_(other.sample_interval_), num_ones_(other.num_ones_) {
+        auto select_lut_sz = selectLutSize();
+        auto num_samples = select_lut_sz/sizeof(position_t);
+        select_lut_ = new position_t[num_samples];
+        memmove(select_lut_, other.select_lut_, num_samples*sizeof(position_t));
+    }
     BitvectorSelect(const position_t sample_interval, 
 		    const std::vector<std::vector<word_t> >& bitvector_per_level, 
 		    const std::vector<position_t>& num_bits_per_level,
@@ -98,7 +103,7 @@ public:
 	//align(dst);
     }
 
-    int deSerialize(char*& src) {
+    int deSerialize(const char*& src) {
 	memcpy(&num_bits_, src, sizeof(num_bits_));
 	src += sizeof(num_bits_);
 	memcpy(&sample_interval_, src, sizeof(sample_interval_));

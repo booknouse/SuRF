@@ -52,7 +52,9 @@ public:
 
 public:
     SuRF() : louds_dense_(nullptr), louds_sparse_(nullptr){};
-
+    SuRF(const SuRF& other)
+        : louds_dense_(new LoudsDense(*other.louds_dense_)),
+          louds_sparse_(new LoudsSparse(*other.louds_sparse_)) {}
     //------------------------------------------------------------------
     // Input keys must be SORTED
     //------------------------------------------------------------------
@@ -106,12 +108,10 @@ public:
 	return cur_data;
     }
 
-    static SuRF* deSerialize(char* src) {
-	SuRF* surf = new SuRF();
-	surf->louds_dense_ = LoudsDense::deSerialize(src);
-	surf->louds_sparse_ = LoudsSparse::deSerialize(src);
+    void deSerialize(const char*& src) {
+	louds_dense_ = LoudsDense::deSerialize(src);
+	louds_sparse_ = LoudsSparse::deSerialize(src);
 	//surf->iter_ = SuRF::Iter(surf);
-	return surf;
     }
 
    private:

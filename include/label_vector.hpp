@@ -12,6 +12,10 @@ namespace surf {
 class LabelVector {
 public:
     LabelVector() : num_bytes_(0), labels_(nullptr) {};
+    LabelVector(const LabelVector& other):num_bytes_(other.num_bytes_) {
+        labels_ = new label_t[num_bytes_];
+        memmove(labels_, other.labels_, num_bytes_*sizeof(label_t));
+    }
 
     LabelVector(const std::vector<std::vector<label_t> >& labels_per_level,
 		const level_t start_level = 0,
@@ -76,7 +80,7 @@ public:
         // align(dst);
     }
 
-    int deSerialize(char*& src) {
+    int deSerialize(const char*& src) {
         memcpy(&num_bytes_, src, sizeof(num_bytes_));
         src += sizeof(num_bytes_);
         labels_ = new label_t[num_bytes_];
