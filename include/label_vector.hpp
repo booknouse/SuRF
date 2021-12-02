@@ -58,15 +58,15 @@ public:
 	return labels_[pos];
     }
 
-    bool search(const label_t target, position_t& pos, const position_t search_len) const;
-    bool searchGreaterThan(const label_t target, position_t& pos, const position_t search_len) const;
+    inline bool search(const label_t target, position_t& pos, const position_t search_len) const;
+    inline bool searchGreaterThan(const label_t target, position_t& pos, const position_t search_len) const;
 
-    bool binarySearch(const label_t target, position_t& pos, const position_t search_len) const;
-    bool simdSearch(const label_t target, position_t& pos, const position_t search_len) const;
-    bool linearSearch(const label_t target, position_t& pos, const position_t search_len) const;
+    inline bool binarySearch(const label_t target, position_t& pos, const position_t search_len) const;
+    inline bool simdSearch(const label_t target, position_t& pos, const position_t search_len) const;
+    inline bool linearSearch(const label_t target, position_t& pos, const position_t search_len) const;
 
-    bool binarySearchGreaterThan(const label_t target, position_t& pos, const position_t search_len) const;
-    bool linearSearchGreaterThan(const label_t target, position_t& pos, const position_t search_len) const;
+    inline bool binarySearchGreaterThan(const label_t target, position_t& pos, const position_t search_len) const;
+    inline bool linearSearchGreaterThan(const label_t target, position_t& pos, const position_t search_len) const;
 
     void serialize(char*& dst) const {
         memcpy(dst, &num_bytes_, sizeof(num_bytes_));

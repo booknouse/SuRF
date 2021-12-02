@@ -27,7 +27,7 @@ public:
 	    }
 	}
 
-	void clear();
+        inline void clear();
 	bool isValid() const { return is_valid_; };
 	bool isSearchComplete() const { return is_search_complete_; };
 	bool isMoveLeftComplete() const { return is_move_left_complete_; };
@@ -37,18 +37,18 @@ public:
 		    (is_move_left_complete_ && is_move_right_complete_));
 	}
 
-	int compare(const std::string& key) const;
-	std::string getKey() const;
-	int getSuffix(word_t* suffix) const;
-	std::string getKeyWithSuffix(unsigned* bitlen) const;
+        inline int compare(const std::string& key) const;
+        inline std::string getKey() const;
+        inline int getSuffix(word_t* suffix) const;
+        inline std::string getKeyWithSuffix(unsigned* bitlen) const;
 	position_t getSendOutNodeNum() const { return send_out_node_num_; };
 
-	void setToFirstLabelInRoot();
-	void setToLastLabelInRoot();
-	void moveToLeftMostKey();
-	void moveToRightMostKey();
-	void operator ++(int);
-	void operator --(int);
+        inline void setToFirstLabelInRoot();
+        inline void setToLastLabelInRoot();
+	inline void moveToLeftMostKey();
+	inline void moveToRightMostKey();
+        inline void operator ++(int);
+        inline void operator --(int);
 
     private:
 	inline void append(position_t pos);
@@ -81,24 +81,24 @@ public:
 
 public:
     LoudsDense() {};
-    LoudsDense(const SuRFBuilder* builder);
+    inline LoudsDense(const SuRFBuilder* builder);
 
     ~LoudsDense() {}
 
     // Returns whether key exists in the trie so far
     // out_node_num == 0 means search terminates in louds-dense.
-    bool lookupKey(const std::string& key, position_t& out_node_num) const;
+    inline bool lookupKey(const std::string& key, position_t& out_node_num) const;
     // return value indicates potential false positive
-    bool moveToKeyGreaterThan(const std::string& key, 
+    inline bool moveToKeyGreaterThan(const std::string& key,
 			      const bool inclusive, LoudsDense::Iter& iter) const;
-    uint64_t approxCount(const LoudsDense::Iter* iter_left,
+    inline uint64_t approxCount(const LoudsDense::Iter* iter_left,
 			 const LoudsDense::Iter* iter_right,
 			 position_t& out_node_num_left,
 			 position_t& out_node_num_right) const;
 
     uint64_t getHeight() const { return height_; };
-    uint64_t serializedSize() const;
-    uint64_t getMemoryUsage() const;
+    inline uint64_t serializedSize() const;
+    inline uint64_t getMemoryUsage() const;
 
     void serialize(char*& dst) const {
 	memcpy(dst, &height_, sizeof(height_));
@@ -146,15 +146,15 @@ public:
     }
 
 private:
-    position_t getChildNodeNum(const position_t pos) const;
-    position_t getSuffixPos(const position_t pos, const bool is_prefix_key) const;
-    position_t getNextPos(const position_t pos) const;
-    position_t getPrevPos(const position_t pos, bool* is_out_of_bound) const;
+    inline position_t getChildNodeNum(const position_t pos) const;
+    inline position_t getSuffixPos(const position_t pos, const bool is_prefix_key) const;
+    inline position_t getNextPos(const position_t pos) const;
+    inline position_t getPrevPos(const position_t pos, bool* is_out_of_bound) const;
 
-    bool compareSuffixGreaterThan(const position_t pos, const std::string& key, 
+    inline bool compareSuffixGreaterThan(const position_t pos, const std::string& key,
 				  const level_t level, const bool inclusive, 
 				  LoudsDense::Iter& iter) const;
-    void extendPosList(std::vector<position_t>& pos_list,
+    inline void extendPosList(std::vector<position_t>& pos_list,
 		       position_t& out_node_num) const;
 
 private:

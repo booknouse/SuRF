@@ -48,17 +48,17 @@ public:
 	return (sizeof(Bitvector) + bitsSize());
     }
 
-    bool readBit(const position_t pos) const;
+    inline bool readBit(const position_t pos) const;
 
-    position_t distanceToNextSetBit(const position_t pos) const;
-    position_t distanceToPrevSetBit(const position_t pos) const;
+    inline position_t distanceToNextSetBit(const position_t pos) const;
+    inline position_t distanceToPrevSetBit(const position_t pos) const;
 
 private:
-    position_t totalNumBits(const std::vector<position_t>& num_bits_per_level, 
+ inline position_t totalNumBits(const std::vector<position_t>& num_bits_per_level,
 			    const level_t start_level, 
 			    const level_t end_level/* non-inclusive */);
 
-    void concatenateBitvectors(const std::vector<std::vector<word_t> >& bitvector_per_level, 
+ inline void concatenateBitvectors(const std::vector<std::vector<word_t> >& bitvector_per_level,
 			       const std::vector<position_t>& num_bits_per_level, 
 			       const level_t start_level, 
 			       const level_t end_level/* non-inclusive */);

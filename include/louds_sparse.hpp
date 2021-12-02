@@ -26,27 +26,27 @@ public:
 	    }
 	}
 
-	void clear();
+        inline void clear();
 	bool isValid() const { return is_valid_; };
-	int compare(const std::string& key) const;
-	std::string getKey() const;
-        int getSuffix(word_t* suffix) const;
-	std::string getKeyWithSuffix(unsigned* bitlen) const;
+        inline int compare(const std::string& key) const;
+        inline std::string getKey() const;
+        inline int getSuffix(word_t* suffix) const;
+        inline std::string getKeyWithSuffix(unsigned* bitlen) const;
 
 	position_t getStartNodeNum() const { return start_node_num_; };
 	void setStartNodeNum(position_t node_num) { start_node_num_ = node_num; };
 
-	void setToFirstLabelInRoot();
-	void setToLastLabelInRoot();
-	void moveToLeftMostKey();
-	void moveToRightMostKey();
-	void operator ++(int);
-	void operator --(int);
+        inline void setToFirstLabelInRoot();
+        inline void setToLastLabelInRoot();
+	inline void moveToLeftMostKey();
+	inline void moveToRightMostKey();
+        inline void operator ++(int);
+        inline void operator --(int);
 
     private:
-	void append(const position_t pos);
-	void append(const label_t label, const position_t pos);
-	void set(const level_t level, const position_t pos);
+     inline void append(const position_t pos);
+     inline void append(const label_t label, const position_t pos);
+     inline void set(const level_t level, const position_t pos);
 
     private:
 	bool is_valid_; // True means the iter currently points to a valid key
@@ -64,25 +64,25 @@ public:
 
 public:
     LoudsSparse() {};
-    LoudsSparse(const SuRFBuilder* builder);
+    inline LoudsSparse(const SuRFBuilder* builder);
 
     ~LoudsSparse() {}
 
     // point query: trie walk starts at node "in_node_num" instead of root
     // in_node_num is provided by louds-dense's lookupKey function
-    bool lookupKey(const std::string& key, const position_t in_node_num) const;
+    inline bool lookupKey(const std::string& key, const position_t in_node_num) const;
     // return value indicates potential false positive
-    bool moveToKeyGreaterThan(const std::string& key, 
+    inline bool moveToKeyGreaterThan(const std::string& key,
 			      const bool inclusive, LoudsSparse::Iter& iter) const;
-    uint64_t approxCount(const LoudsSparse::Iter* iter_left,
+    inline uint64_t approxCount(const LoudsSparse::Iter* iter_left,
 			 const LoudsSparse::Iter* iter_right,
 			 const position_t in_node_num_left,
 			 const position_t in_node_num_right) const;
 
     level_t getHeight() const { return height_; };
     level_t getStartLevel() const { return start_level_; };
-    uint64_t serializedSize() const;
-    uint64_t getMemoryUsage() const;
+    inline uint64_t serializedSize() const;
+    inline uint64_t getMemoryUsage() const;
 
     void serialize(char*& dst) const {
 	memcpy(dst, &height_, sizeof(height_));
@@ -143,24 +143,24 @@ public:
     }
 
 private:
-    position_t getChildNodeNum(const position_t pos) const;
-    position_t getFirstLabelPos(const position_t node_num) const;
-    position_t getLastLabelPos(const position_t node_num) const;
-    position_t getSuffixPos(const position_t pos) const;
-    position_t nodeSize(const position_t pos) const;
-    bool isEndofNode(const position_t pos) const;
+    inline position_t getChildNodeNum(const position_t pos) const;
+    inline position_t getFirstLabelPos(const position_t node_num) const;
+    inline position_t getLastLabelPos(const position_t node_num) const;
+    inline position_t getSuffixPos(const position_t pos) const;
+    inline position_t nodeSize(const position_t pos) const;
+    inline bool isEndofNode(const position_t pos) const;
 
-    void moveToLeftInNextSubtrie(position_t pos, const position_t node_size, 
+    inline void moveToLeftInNextSubtrie(position_t pos, const position_t node_size,
 				 const label_t label, LoudsSparse::Iter& iter) const;
     // return value indicates potential false positive
-    bool compareSuffixGreaterThan(const position_t pos, const std::string& key, 
+    inline bool compareSuffixGreaterThan(const position_t pos, const std::string& key,
 				  const level_t level, const bool inclusive, 
 				  LoudsSparse::Iter& iter) const;
 
-    position_t appendToPosList(std::vector<position_t>& pos_list,
+    inline position_t appendToPosList(std::vector<position_t>& pos_list,
 			       const position_t node_num, const level_t level,
 			       const bool isLeft, bool& done) const;
-    void extendPosList(std::vector<position_t>& left_pos_list,
+    inline void extendPosList(std::vector<position_t>& left_pos_list,
 		       std::vector<position_t>& right_pos_list,
 		       const position_t left_in_node_num,
 		       const position_t right_in_node_num) const;

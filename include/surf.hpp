@@ -22,24 +22,24 @@ public:
 	    could_be_fp_ = false;
 	}
 
-	void clear();
-	bool isValid() const;
-	bool getFpFlag() const;
-	int compare(const std::string& key) const;
-	std::string getKey() const;
-	int getSuffix(word_t* suffix) const;
-	std::string getKeyWithSuffix(unsigned* bitlen) const;
+        inline void clear();
+        inline bool isValid() const;
+        inline bool getFpFlag() const;
+        inline int compare(const std::string& key) const;
+        inline std::string getKey() const;
+        inline int getSuffix(word_t* suffix) const;
+        inline std::string getKeyWithSuffix(unsigned* bitlen) const;
 
 	// Returns true if the status of the iterator after the operation is valid
-	bool operator ++(int);
-	bool operator --(int);
+        inline bool operator ++(int);
+        inline bool operator --(int);
 
     private:
-	void passToSparse();
-	bool incrementDenseIter();
-	bool incrementSparseIter();
-	bool decrementDenseIter();
-	bool decrementSparseIter();
+     inline void passToSparse();
+     inline bool incrementDenseIter();
+     inline bool incrementSparseIter();
+     inline bool decrementDenseIter();
+     inline bool decrementSparseIter();
 
     private:
 	// true implies that dense_iter_ is valid
@@ -51,7 +51,7 @@ public:
     };
 
 public:
-    SuRF() {};
+    SuRF() : louds_dense_(nullptr), louds_sparse_(nullptr){};
 
     //------------------------------------------------------------------
     // Input keys must be SORTED
@@ -73,28 +73,28 @@ public:
 
     ~SuRF() { destroy(); }
 
-    void create(const std::vector<std::string>& keys,
+    inline void create(const std::vector<std::string>& keys,
 		const bool include_dense, const uint32_t sparse_dense_ratio,
 		const SuffixType suffix_type,
                 const level_t hash_suffix_len, const level_t real_suffix_len);
 
-    bool lookupKey(const std::string& key) const;
+    inline bool lookupKey(const std::string& key) const;
     // This function searches in a conservative way: if inclusive is true
     // and the stored key prefix matches key, iter stays at this key prefix.
-    SuRF::Iter moveToKeyGreaterThan(const std::string& key, const bool inclusive) const;
-    SuRF::Iter moveToKeyLessThan(const std::string& key, const bool inclusive) const;
-    SuRF::Iter moveToFirst() const;
-    SuRF::Iter moveToLast() const;
-    bool lookupRange(const std::string& left_key, const bool left_inclusive, 
+    inline SuRF::Iter moveToKeyGreaterThan(const std::string& key, const bool inclusive) const;
+    inline SuRF::Iter moveToKeyLessThan(const std::string& key, const bool inclusive) const;
+    inline SuRF::Iter moveToFirst() const;
+    inline SuRF::Iter moveToLast() const;
+    inline bool lookupRange(const std::string& left_key, const bool left_inclusive,
 		     const std::string& right_key, const bool right_inclusive);
     // Accurate except at the boundaries --> undercount by at most 2
-    uint64_t approxCount(const std::string& left_key, const std::string& right_key);
-    uint64_t approxCount(const SuRF::Iter* iter, const SuRF::Iter* iter2);
+    inline uint64_t approxCount(const std::string& left_key, const std::string& right_key);
+    inline uint64_t approxCount(const SuRF::Iter* iter, const SuRF::Iter* iter2);
 
-    uint64_t serializedSize() const;
-    uint64_t getMemoryUsage() const;
-    level_t getHeight() const;
-    level_t getSparseStartLevel() const;
+    inline uint64_t serializedSize() const;
+    inline uint64_t getMemoryUsage() const;
+    inline level_t getHeight() const;
+    inline level_t getSparseStartLevel() const;
 
     char* serialize(char* buf) const {
 	uint64_t size = serializedSize();
@@ -116,10 +116,14 @@ public:
 
    private:
     void destroy() {
-	louds_dense_->destroy();
-	delete louds_dense_;
-	louds_sparse_->destroy();
-	delete louds_sparse_;
+        if(louds_dense_) {
+            louds_dense_->destroy();
+            delete louds_dense_;
+        }
+        if(louds_sparse_) {
+            louds_sparse_->destroy();
+            delete louds_sparse_;
+        }
     }
 
 private:

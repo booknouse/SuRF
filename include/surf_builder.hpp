@@ -27,7 +27,7 @@ public:
     // through a single scan of the sorted key list.
     // After build, the member vectors are used in SuRF constructor.
     // REQUIRED: provided key list must be sorted.
-    void build(const std::vector<std::string>& keys);
+    inline void build(const std::vector<std::string>& keys);
 
     static bool readBit(const std::vector<word_t>& bits, const position_t pos) {
 	assert(pos < (bits.size() * kWordSize));
@@ -98,7 +98,7 @@ private:
 
     // Fill in the LOUDS-Sparse vectors through a single scan
     // of the sorted key list.
-    void buildSparse(const std::vector<std::string>& keys);
+    inline void buildSparse(const std::vector<std::string>& keys);
 
     // Walks down the current partially-filled trie by comparing key to
     // its previous key in the list until their prefixes do not match.
@@ -106,14 +106,14 @@ private:
     // label vector.
     // For each matching prefix byte(label), it sets the corresponding
     // child indicator bit to 1 for that label.
-    level_t skipCommonPrefix(const std::string& key);
+    inline level_t skipCommonPrefix(const std::string& key);
 
     // Starting at the start_level of the trie, the function inserts 
     // key bytes to the trie vectors until the first byte/label where 
     // key and next_key do not match.
     // This function is called after skipCommonPrefix. Therefore, it
     // guarantees that the stored prefix of key is unique in the trie.
-    level_t insertKeyBytesToTrieUntilUnique(const std::string& key, const std::string& next_key, const level_t start_level);
+    inline level_t insertKeyBytesToTrieUntilUnique(const std::string& key, const std::string& next_key, const level_t start_level);
 
     // Fills in the suffix byte for key
     inline void insertSuffix(const std::string& key, const level_t level);
@@ -121,7 +121,7 @@ private:
     inline bool isCharCommonPrefix(const label_t c, const level_t level) const;
     inline bool isLevelEmpty(const level_t level) const;
     inline void moveToNextItemSlot(const level_t level);
-    void insertKeyByte(const char c, const level_t level, const bool is_start_of_node, const bool is_term);
+    inline void insertKeyByte(const char c, const level_t level, const bool is_start_of_node, const bool is_term);
     inline void storeSuffix(const level_t level, const word_t suffix);
 
     // Compute sparse_start_level_ according to the pre-defined
@@ -135,15 +135,15 @@ private:
     // Fill in the LOUDS-Dense vectors based on the built
     // Sparse vectors.
     // Called after sparse_start_level_ is set.
-    void buildDense();
+    inline void buildDense();
 
-    void initDenseVectors(const level_t level);
-    void setLabelAndChildIndicatorBitmap(const level_t level, const position_t node_num, const position_t pos);
+    inline void initDenseVectors(const level_t level);
+    inline void setLabelAndChildIndicatorBitmap(const level_t level, const position_t node_num, const position_t pos);
 
-    position_t getNumItems(const level_t level) const;
-    void addLevel();
-    bool isStartOfNode(const level_t level, const position_t pos) const;
-    bool isTerminator(const level_t level, const position_t pos) const;
+    inline position_t getNumItems(const level_t level) const;
+    inline void addLevel();
+    inline bool isStartOfNode(const level_t level, const position_t pos) const;
+    inline bool isTerminator(const level_t level, const position_t pos) const;
 
 private:
     // trie level < sparse_start_level_: LOUDS-Dense

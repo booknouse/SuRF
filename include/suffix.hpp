@@ -127,13 +127,13 @@ public:
 	return (sizeof(BitvectorSuffix) + bitsSize());
     }
 
-    word_t read(const position_t idx) const;
-    word_t readReal(const position_t idx) const;
-    bool checkEquality(const position_t idx, const std::string& key, const level_t level) const;
+    inline word_t read(const position_t idx) const;
+    inline word_t readReal(const position_t idx) const;
+    inline bool checkEquality(const position_t idx, const std::string& key, const level_t level) const;
 
     // Compare stored suffix to querying suffix.
     // kReal suffix type only.
-    int compare(const position_t idx, const std::string& key, const level_t level) const;
+    inline int compare(const position_t idx, const std::string& key, const level_t level) const;
 
     void serialize(char*& dst) const {
 	memcpy(dst, &num_bits_, sizeof(num_bits_));
