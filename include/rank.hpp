@@ -64,29 +64,40 @@ public:
     }
 
     void serialize(char*& dst) const {
-	memcpy(dst, &num_bits_, sizeof(num_bits_));
+        *reinterpret_cast<uint32_t*>(dst) = htobe32(num_bits_);
 	dst += sizeof(num_bits_);
-	memcpy(dst, &basic_block_size_, sizeof(basic_block_size_));
+    *reinterpret_cast<uint32_t*>(dst) = htobe32(basic_block_size_);
 	dst += sizeof(basic_block_size_);
-	memcpy(dst, bits_, bitsSize());
-	dst += bitsSize();
-	memcpy(dst, rank_lut_, rankLutSize());
-	dst += rankLutSize();
+    auto num_words = numWords();
+    for(int i=0;i<num_words;i++) {
+        *reinterpret_cast<uint64_t*>(dst) = htobe64(bits_[i]);
+		dst += sizeof(uint64_t);
+    }
+    position_t num_blocks = num_bits_ / basic_block_size_ + 1;
+    for(int i=0;i<num_blocks;i++) {
+        *reinterpret_cast<uint32_t*>(dst) = htobe32(rank_lut_[i]);
+        dst += sizeof(uint32_t);
+    }
 	//align(dst);
     }
 
     int deSerialize(const char*& src) {
-	memcpy(&num_bits_, src, sizeof(num_bits_));
+        num_bits_ = be32toh(*reinterpret_cast<const uint32_t*>(src));
 	src += sizeof(num_bits_);
-	memcpy(&basic_block_size_, src, sizeof(basic_block_size_));
+    basic_block_size_=be32toh(*reinterpret_cast<const uint32_t*>(src));
 	src += sizeof(basic_block_size_);
-	bits_ = new word_t[numWords()];
-        memcpy(bits_, src, bitsSize());
-	src += bitsSize();
+    auto num_words = numWords();
+	bits_ = new word_t[num_words];
+    for(int i=0;i<num_words;i++) {
+        bits_[i] = be64toh(*reinterpret_cast<const uint64_t*>(src));
+		src += sizeof(uint64_t);
+    }
 	position_t num_blocks = num_bits_ / basic_block_size_ + 1;
 	rank_lut_ = new position_t[num_blocks];
-	memcpy(rank_lut_, src, rankLutSize());
-	src += rankLutSize();
+    for(int i=0;i<num_blocks;i++) {
+        rank_lut_[i] = be32toh(*reinterpret_cast<const uint32_t*>(src));
+        src += sizeof(uint32_t);
+    }
 	//align(src);
 	return 0;
     }

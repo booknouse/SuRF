@@ -90,34 +90,43 @@ public:
     }
 
     void serialize(char*& dst) const {
-	memcpy(dst, &num_bits_, sizeof(num_bits_));
+		*reinterpret_cast<uint32_t*>(dst) = htobe32(num_bits_);
 	dst += sizeof(num_bits_);
-	memcpy(dst, &sample_interval_, sizeof(sample_interval_));
+	*reinterpret_cast<uint32_t*>(dst) = htobe32(sample_interval_);
 	dst += sizeof(sample_interval_);
-	memcpy(dst, &num_ones_, sizeof(num_ones_));
+	*reinterpret_cast<uint32_t*>(dst) = htobe32(num_ones_);
 	dst += sizeof(num_ones_);
-	memcpy(dst, bits_, bitsSize());
-	dst += bitsSize();
-	memcpy(dst, select_lut_, selectLutSize());
-	dst += selectLutSize();
+	for(int i=0;i<numWords();i++) {
+		*reinterpret_cast<uint64_t*>(dst) = htobe64(bits_[i]);
+		dst += sizeof(uint64_t);
+	}
+	auto num_samples = num_ones_ / sample_interval_ + 1;
+	for(int i=0;i<num_samples;i++){
+		*reinterpret_cast<uint32_t*>(dst) = htobe32(select_lut_[i]);
+		dst += sizeof(uint32_t);
+	}
 	//align(dst);
     }
 
     int deSerialize(const char*& src) {
-	memcpy(&num_bits_, src, sizeof(num_bits_));
+		num_bits_ = be32toh(*reinterpret_cast<const uint32_t*>(src));
 	src += sizeof(num_bits_);
-	memcpy(&sample_interval_, src, sizeof(sample_interval_));
+	sample_interval_ = be32toh(*reinterpret_cast<const uint32_t*>(src));
 	src += sizeof(sample_interval_);
-	memcpy(&num_ones_, src, sizeof(num_ones_));
+	num_ones_ = be32toh(*reinterpret_cast<const uint32_t*>(src));
 	src += sizeof(num_ones_);
-	bits_ = new word_t[numWords()];
-        memcpy(bits_, src, bitsSize());
-	src += bitsSize();
-	auto select_lut_sz = selectLutSize();
-	auto num_samples = select_lut_sz/sizeof(position_t);
+	auto num_words = numWords();
+	bits_ = new word_t[num_words];
+	for(int i=0;i<num_words;i++){
+		bits_[i] = be64toh(*reinterpret_cast<const uint64_t*>(src));
+		src += sizeof(uint64_t);
+	}
+	auto num_samples = num_ones_ / sample_interval_ + 1;
 	select_lut_ = new position_t[num_samples];
-	memcpy(select_lut_, src, select_lut_sz);
-	src += select_lut_sz;
+	for(int i=0;i<num_samples;i++){
+		select_lut_[i] = be32toh(*reinterpret_cast<const uint32_t*>(src));
+		src += sizeof(uint32_t);
+	}
 	//align(src);
 	return 0;
     }

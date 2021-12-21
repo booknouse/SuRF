@@ -73,7 +73,7 @@ public:
     inline bool linearSearchGreaterThan(const label_t target, position_t& pos, const position_t search_len) const;
 
     void serialize(char*& dst) const {
-        memcpy(dst, &num_bytes_, sizeof(num_bytes_));
+		*reinterpret_cast<uint32_t *>(dst) = htobe32(num_bytes_);
         dst += sizeof(num_bytes_);
         memcpy(dst, labels_, num_bytes_);
         dst += num_bytes_;
@@ -81,7 +81,7 @@ public:
     }
 
     int deSerialize(const char*& src) {
-        memcpy(&num_bytes_, src, sizeof(num_bytes_));
+		num_bytes_ = be32toh(*reinterpret_cast<const uint32_t *>(src));
         src += sizeof(num_bytes_);
         labels_ = new label_t[num_bytes_];
         memcpy(labels_, src, num_bytes_);

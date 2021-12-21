@@ -136,34 +136,39 @@ public:
     inline int compare(const position_t idx, const std::string& key, const level_t level) const;
 
     void serialize(char*& dst) const {
-	memcpy(dst, &num_bits_, sizeof(num_bits_));
+        *reinterpret_cast<uint32_t*>(dst) = htobe32(num_bits_);
 	dst += sizeof(num_bits_);
-	memcpy(dst, &type_, sizeof(type_));
+    *reinterpret_cast<uint32_t*>(dst) = htobe32(type_);
 	dst += sizeof(type_);
-	memcpy(dst, &hash_suffix_len_, sizeof(hash_suffix_len_));
+    *reinterpret_cast<uint32_t*>(dst) = htobe32(hash_suffix_len_);
 	dst += sizeof(hash_suffix_len_);
-        memcpy(dst, &real_suffix_len_, sizeof(real_suffix_len_));
+    *reinterpret_cast<uint32_t*>(dst) = htobe32(real_suffix_len_);
 	dst += sizeof(real_suffix_len_);
 	if (type_ != kNone) {
-	    memcpy(dst, bits_, bitsSize());
-	    dst += bitsSize();
+        for(int i=0;i<numWords();i++) {
+            *reinterpret_cast<uint64_t*>(dst) = htobe64(bits_[i]);
+            dst += sizeof(uint64_t);
+        }
 	}
 	//align(dst);
     }
 
     int deSerialize(const char*& src) {
-	memcpy(&num_bits_, src, sizeof(num_bits_));
+        num_bits_ = be32toh(*reinterpret_cast<const uint32_t*>(src));
 	src += sizeof(num_bits_);
-	memcpy(&type_, src, sizeof(type_));
+    type_ = static_cast<SuffixType>(be32toh(*reinterpret_cast<const uint32_t*>(src)));
 	src += sizeof(type_);
-	memcpy(&hash_suffix_len_, src, sizeof(hash_suffix_len_));
+    hash_suffix_len_ = be32toh(*reinterpret_cast<const uint32_t*>(src));
 	src += sizeof(hash_suffix_len_);
-        memcpy(&real_suffix_len_, src, sizeof(real_suffix_len_));
+    real_suffix_len_ = be32toh(*reinterpret_cast<const uint32_t*>(src));
 	src += sizeof(real_suffix_len_);
 	if (type_ != kNone) {
-	    bits_ =  new word_t[numWords()];
-	    memcpy(bits_, src, bitsSize());
-	    src += bitsSize();
+        auto num_words = numWords();
+	    bits_ =  new word_t[num_words];
+        for(int i=0;i<num_words;i++) {
+            bits_[i] = be64toh(*reinterpret_cast<const uint64_t*>(src));
+            src += sizeof(uint64_t);
+        }
 	}
 	//align(src);
 	return 0;

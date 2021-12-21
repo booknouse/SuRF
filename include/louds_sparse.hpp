@@ -97,16 +97,18 @@ public:
     inline uint64_t getMemoryUsage() const;
 
     void serialize(char*& dst) const {
-	memcpy(dst, &height_, sizeof(height_));
+		*reinterpret_cast<uint32_t*>(dst) = htobe32(height_);
 	dst += sizeof(height_);
-	memcpy(dst, &start_level_, sizeof(start_level_));
+	*reinterpret_cast<uint32_t*>(dst) = htobe32(start_level_);
 	dst += sizeof(start_level_);
-	memcpy(dst, &node_count_dense_, sizeof(node_count_dense_));
+	*reinterpret_cast<uint32_t*>(dst) = htobe32(node_count_dense_);
 	dst += sizeof(node_count_dense_);
-	memcpy(dst, &child_count_dense_, sizeof(child_count_dense_));
+	*reinterpret_cast<uint32_t*>(dst) = htobe32(child_count_dense_);
 	dst += sizeof(child_count_dense_);
-	memcpy(dst, level_cuts_, sizeof(position_t) * height_);
-	dst += (sizeof(position_t) * height_);
+	for(int i=0;i<height_;i++){
+		*reinterpret_cast<uint32_t*>(dst) = htobe32(level_cuts_[i]);
+		dst += sizeof(position_t);
+	}
 	//align(dst);
 	labels_->serialize(dst);
 	child_indicator_bits_->serialize(dst);
@@ -117,18 +119,19 @@ public:
 
     static LoudsSparse* deSerialize(const char*& src) {
 	LoudsSparse* louds_sparse = new LoudsSparse();
-	memcpy(&(louds_sparse->height_), src, sizeof(louds_sparse->height_));
+	louds_sparse->height_ = be32toh(*reinterpret_cast<const uint32_t*>(src));
 	src += sizeof(louds_sparse->height_);
-	memcpy(&(louds_sparse->start_level_), src, sizeof(louds_sparse->start_level_));
+	louds_sparse->start_level_ = be32toh(*reinterpret_cast<const uint32_t*>(src));
 	src += sizeof(louds_sparse->start_level_);
-	memcpy(&(louds_sparse->node_count_dense_), src, sizeof(louds_sparse->node_count_dense_));
+	louds_sparse->node_count_dense_ = be32toh(*reinterpret_cast<const uint32_t*>(src));
 	src += sizeof(louds_sparse->node_count_dense_);
-	memcpy(&(louds_sparse->child_count_dense_), src, sizeof(louds_sparse->child_count_dense_));
+	louds_sparse->child_count_dense_ = be32toh(*reinterpret_cast<const uint32_t*>(src));
 	src += sizeof(louds_sparse->child_count_dense_);
 	louds_sparse->level_cuts_ = new position_t[louds_sparse->height_];
-	memcpy(louds_sparse->level_cuts_, src,
-	       sizeof(position_t) * (louds_sparse->height_));
-	src += (sizeof(position_t) * (louds_sparse->height_));
+	for(int i=0;i<louds_sparse->height_;i++){
+		louds_sparse->level_cuts_[i] = be32toh(*reinterpret_cast<const uint32_t*>(src));
+		src += sizeof(uint32_t);
+	}
 	//align(src);
 	louds_sparse->labels_ = new LabelVector();
 	louds_sparse->labels_->deSerialize(src);

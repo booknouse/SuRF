@@ -109,10 +109,12 @@ public:
     inline uint64_t getMemoryUsage() const;
 
     void serialize(char*& dst) const {
-	memcpy(dst, &height_, sizeof(height_));
+		*reinterpret_cast<uint32_t *>(dst) = htobe32(height_);
 	dst += sizeof(height_);
-	memcpy(dst, level_cuts_, sizeof(position_t) * height_);
-	dst += (sizeof(position_t) * height_);
+	for(int i=0;i<height_;i++){
+		*reinterpret_cast<uint32_t *>(dst) = htobe32(level_cuts_[i]);
+		dst += sizeof(uint32_t);
+	}
 	//align(dst);
 	label_bitmaps_->serialize(dst);
 	child_indicator_bitmaps_->serialize(dst);
@@ -123,12 +125,13 @@ public:
 
     static LoudsDense* deSerialize(const char*& src) {
 	LoudsDense* louds_dense = new LoudsDense();
-	memcpy(&(louds_dense->height_), src, sizeof(louds_dense->height_));
+	louds_dense->height_ = be32toh(*reinterpret_cast<const uint32_t *>(src));
 	src += sizeof(louds_dense->height_);
 	louds_dense->level_cuts_ = new position_t[louds_dense->height_];
-	memcpy(louds_dense->level_cuts_, src,
-	       sizeof(position_t) * (louds_dense->height_));
-	src += (sizeof(position_t) * (louds_dense->height_));
+	for(int i=0;i<louds_dense->height_;i++){
+		louds_dense->level_cuts_[i] = be32toh(*reinterpret_cast<const uint32_t *>(src));
+		src += sizeof(uint32_t);
+	}
 	//align(src);
 	louds_dense->label_bitmaps_ = new BitvectorRank();
 	louds_dense->label_bitmaps_->deSerialize(src);
