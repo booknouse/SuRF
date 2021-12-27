@@ -283,8 +283,9 @@ uint64_t SuRF::approxCount(const std::string& left_key,
 }
 
 uint64_t SuRF::serializedSize() const {
-    return (louds_dense_->serializedSize()
-	    + louds_sparse_->serializedSize());
+    if (louds_dense_ && louds_sparse_)
+        return (louds_dense_->serializedSize() + louds_sparse_->serializedSize());
+    return 0;
 }
 
 uint64_t SuRF::getMemoryUsage() const {
